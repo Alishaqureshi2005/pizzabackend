@@ -6,8 +6,14 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "seed": "node seeders/menuSeeder.js -i",
-    "seed:destroy": "node seeders/menuSeeder.js -d"
+    "seed": "node seeders/index.js",
+    "seed:destroy": "node seeders/index.js -d",
+    "seed:users": "node seeders/userSeeder.js",
+    "seed:categories": "node seeders/categorySeeder.js",
+    "seed:products": "node seeders/productSeeder.js",
+    "seed:extras": "node seeders/extraItemSeeder.js",
+    "seed:toppings": "node seeders/toppingSeeder.js",
+    "seed:delivery": "node seeders/deliveryAreaSeeder.js"
   },
   "keywords": [],
   "author": "",
@@ -15,13 +21,18 @@
   "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.8.7",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.2",
+    "node-thermal-printer": "^4.4.5",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

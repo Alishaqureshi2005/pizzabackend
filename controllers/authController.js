@@ -96,11 +96,12 @@ exports.login = async (req, res) => {
         }))
       });
     }
-
+console.log(req.body)
     const { email, password } = req.body;
 
     // Check for user
     const user = await User.findOne({ email }).select('+password');
+    console.log(user)
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -124,7 +125,7 @@ exports.login = async (req, res) => {
         }]
       });
     }
-
+console.log(isMatch)
     // Generate token
     const token = generateToken(user._id);
 
@@ -138,6 +139,7 @@ exports.login = async (req, res) => {
         role: user.role
       }
     });
+    console.log(token)
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
@@ -153,14 +155,32 @@ exports.login = async (req, res) => {
 // @access  Private
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    // Check if user exists in request
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized to access this route'
+      });
+    }
+
+    // Get fresh user data from database
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
     res.status(200).json({
       success: true,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        phone: user.phone
       }
     });
   } catch (error) {

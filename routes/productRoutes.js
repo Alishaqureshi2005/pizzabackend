@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { protect, authorize } = require('../middleware/auth');
 const {
   getProducts,
   getProduct,
@@ -8,27 +7,16 @@ const {
   updateProduct,
   deleteProduct
 } = require('../controllers/productController');
+const { protect, authorize } = require('../middleware/auth');
+const { upload, handleMulterError } = require('../middleware/upload');
 
 // Public routes
-router
-  .route('/')
-  .get(getProducts);
-
-router
-  .route('/:id')
-  .get(getProduct);
+router.get('/', getProducts);
+router.get('/:id', getProduct);
 
 // Admin routes
-router.use(protect);
-router.use(authorize('admin'));
-
-router
-  .route('/')
-  .post(createProduct);
-
-router
-  .route('/:id')
-  .put(updateProduct)
-  .delete(deleteProduct);
+router.post('/', protect, authorize('admin'), upload.single('image'), handleMulterError, createProduct);
+router.put('/:id', protect, authorize('admin'), upload.single('image'), handleMulterError, updateProduct);
+router.delete('/:id', protect, authorize('admin'), deleteProduct);
 
 module.exports = router; 

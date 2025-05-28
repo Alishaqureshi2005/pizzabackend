@@ -15,6 +15,16 @@ const {
   updateProduct,
   deleteProduct
 } = require('../controllers/productController');
+const {
+  getUsers,
+  getUser,
+  updateUser,
+  deleteUser,
+  getOrders,
+  getOrder,
+  updateOrderStatus,
+  getDashboardStats
+} = require('../controllers/adminController');
 
 // Apply authentication and authorization middleware to all routes
 router.use(protect);
@@ -43,5 +53,27 @@ router
   .get(getProduct)
   .put(updateProduct)
   .delete(deleteProduct);
+
+// Dashboard route
+router.get('/dashboard', getDashboardStats);
+
+// User management routes
+router.route('/users')
+  .get(getUsers);
+
+router.route('/users/:id')
+  .get(getUser)
+  .put(updateUser)
+  .delete(deleteUser);
+
+// Order management routes
+router.route('/orders')
+  .get(getOrders);
+
+router.route('/orders/:id')
+  .get(getOrder);
+
+router.route('/orders/:id/status')
+  .put(updateOrderStatus);
 
 module.exports = router; 

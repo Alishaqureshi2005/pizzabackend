@@ -1,205 +1,208 @@
 const menuData = [
   {
-    category: "Pizza's",
-    description: "Verscheidenheid aan pizza's in kleine en grote maten",
+    category: "Classic Pizzas",
+    description: "Traditional and classic pizza flavors",
     items: [
       {
-        title: "MARGIRITA#1",
+        title: "MARGIRITA",
         content: "Tomatensaus, kaas",
-        price: "8.95"
+        price: "8.95",
+        isVegetarian: true
       },
       {
-        title: "FUNGHI#2",
+        title: "FUNGHI",
         content: "Tomatensaus, kaas, champignons",
-        price: "8.95"
+        price: "8.95",
+        isVegetarian: true
       },
       {
-        title: "PROSCUITTO#3",
+        title: "PROSCUITTO",
         content: "Tomatensaus, kaas, ham",
         price: "8.95"
       },
       {
-        title: "SALAMI#4",
+        title: "SALAMI",
         content: "Tomatensaus, kaas, salami",
         price: "8.95"
       },
       {
-        title: "BOLOGNAISE#5",
+        title: "BOLOGNAISE",
         content: "Bolognaise, kaas, look",
         price: "8.95"
       },
       {
-        title: "TONNO#6",
+        title: "TONNO",
         content: "Tomatensaus, kaas, tonijn, ui, olijven",
         price: "8.95"
       },
       {
-        title: "VEGETARISCH #7",
+        title: "VEGETARISCH",
         content: "Tomatensaus, kaas, paprika, champignons, mais, ui, olijven",
-        price: "8.95"
+        price: "8.95",
+        isVegetarian: true
       },
       {
-        title: "QUATTRO FROMAGGIO #8",
+        title: "QUATTRO FROMAGGIO",
         content: "Tomatensaus, kaas, vier soorten kaas",
         price: "8.95"
       },
       {
-        title: "PEPPERONI #9",
+        title: "PEPPERONI",
         content: "Tomatensaus, kaas, pepperoni, maïs pikante pepers",
         price: "8.95"
       },
       {
-        title: "MIMOSA #10",
+        title: "MIMOSA",
         content: "Tomatensaus, kaas, ham, tomaat",
         price: "8.95"
       },
       {
-        title: "KEBAB #11",
+        title: "KEBAB",
         content: "Tomatensaus, kaas, kebab",
         price: "8.95"
       },
       {
-        title: "QUATTRO STAGIONE #12",
+        title: "QUATTRO STAGIONE",
         content: "Tomatensaus, kaas, champignons, paprika, salami, ham",
         price: "9.95"
       },
       {
-        title: "MARGARITA SPECIAAL #13",
+        title: "MARGARITA SPECIAAL",
         content: "Tomatensaus, kaas, look, ui, paprika, mozzarella kaas",
         price: "9.95"
       },
       {
-        title: "BOLOGNAISE SPECIAAL #14",
+        title: "BOLOGNAISE SPECIAAL",
         content: "Bolognaise, look, ui, kaas, pikante peppers",
         price: "9.95"
       },
       {
-        title: "KEBAB SPECIAAL #15",
+        title: "KEBAB SPECIAAL",
         content: "Tomatensaus, kaas, kebab, ui, paprika, look",
         price: "9.95"
       },
       {
-        title: "RUSTICA #16",
+        title: "RUSTICA",
         content: "Tomatensaus, kaas, ham, salami, ei",
         price: "9.95"
       },
       {
-        title: "CALZONE #17",
+        title: "CALZONE",
         content: "Tomatensaus, kaas, ham, salami, paprika, bolognaise",
         price: "9.95"
       },
       {
-        title: "BOLOGNAISE KIP #18",
+        title: "BOLOGNAISE KIP",
         content: "bolognaisesaus, kaas, look, ui, kip",
         price: "9.95"
       },
       {
-        title: "POLLO #19",
+        title: "POLLO",
         content: "Tomatensaus, kaas, kip, ui, champignons, paprika",
         price: "10.95"
       },
       {
-        title: "HAWAI #20",
+        title: "HAWAI",
         content: "Tomatensaus, kaas, ham, kip, ananas, maïs",
         price: "10.95"
       },
       {
-        title: "BBQ KIP #21",
+        title: "BBQ KIP",
         content: "Bbq saus, kaas, ui, paprika, kip",
         price: "10.95"
       },
       {
-        title: "BBQ GEHAKT #22",
+        title: "BBQ GEHAKT",
         content: "Bbq saus, kaas, ui, paprika, gehaktballetjes",
         price: "10.95"
       },
       {
-        title: "BBQ BACON #23",
+        title: "BBQ BACON",
         content: "Bbq saus, kaas, ui, paprika, bacon, gehakt",
         price: "10.95"
       },
       {
-        title: "PIZZA MERGUEZZ #24",
+        title: "PIZZA MERGUEZZ",
         content: "Tomatensaus, kaas, ui, paprika, look, merguez, pikante pepers, bbq saus",
         price: "10.95"
       },
       {
-        title: "HOT PIZZA #25",
+        title: "HOT PIZZA",
         content: "Tomatensaus, kaas, peperoni, ui, paprika, pikante pepers",
         price: "10.95"
       },
       {
-        title: "ROOM VEGIE #26",
+        title: "ROOM VEGIE",
         content: "Roomsaus, kaas, champignons, ui, paprika, maïs, olijven",
         price: "10.95"
       },
       {
-        title: "ROOM BACON #27",
+        title: "ROOM BACON",
         content: "Roomsaus, kaas, bacon, ui, paprika",
         price: "10.95"
       },
       {
-        title: "ROOME KIP #28",
+        title: "ROOME KIP",
         content: "Roomsaus, kaas, paprika, ui, kip",
         price: "10.95"
       },
       {
-        title: "CURRY KIP #29",
+        title: "CURRY KIP",
         content: "Currysaus, kaas, ui, ananas, kip, mozzarella",
         price: "10.95"
       },
       {
-        title: "CURRY KEBAB #30",
+        title: "CURRY KEBAB",
         content: "Currysaus, kaas, ui, paprika, kebab, pikante pepers",
         price: "10.95"
       },
       {
-        title: "CURRY VEGIE #31",
+        title: "CURRY VEGIE",
         content: "Currysaus, kaas, ui, champignons, paprika, maïs, olijven",
         price: "10.95"
       },
       {
-        title: "CURRY DELUXE #32",
+        title: "CURRY DELUXE",
         content: "Currysaus, kaas, ui, paprika, kip, gehaktballetjes",
         price: "11.95"
       },
       {
-        title: "TANDOORI #33",
+        title: "TANDOORI",
         content: "Tomatensaus, kaas, ui, paprika, tandoori kip",
         price: "11.95"
       },
       {
-        title: "FRUTTI DI MARE #34",
+        title: "FRUTTI DI MARE",
         content: "Tomatensaus, kaas, tonijn, scampi's, garnalen, mosselen, calamares",
         price: "11.95"
       },
       {
-        title: "FULL OPTION #35",
+        title: "FULL OPTION",
         content: "Tomatensaus, kaas, ui, maïs, paprika, salami, bolognaise, kip, olijven",
         price: "11.95"
       },
       {
-        title: "PIZZA MIX #36",
+        title: "PIZZA MIX",
         content: "Tomatensaus, kaas, pitta vlees, kip pikante pepers, ui, champignons",
         price: "11.95"
       },
       {
-        title: "BBQ SPECIAAL #37",
+        title: "BBQ SPECIAAL",
         content: "Bbq saus, kaas, pepperoni, ui, paprika, kip, gehaktballetjes",
         price: "11.95"
       },
       {
-        title: "CURRY SPECIAAL #38",
+        title: "CURRY SPECIAAL",
         content: "Currysaus, kaas, ham, gehaktballetjes, ui, paprika, kip, mozzarella",
         price: "11.95"
       },
       {
-        title: "PIZZA SCAMPI'S #39",
+        title: "PIZZA SCAMPI'S",
         content: "Tomatensaus, kaas, ui, paprika, scampi's",
         price: "11.95"
       },
       {
-        title: "PIZZA HUSREV #40",
+        title: "PIZZA HUSREV",
         content: "Tomatensaus, kaas, peperoni, salami, ham, paprika, gehaktballetjes, kip, olijven",
         price: "11.95"
       }
@@ -210,67 +213,67 @@ const menuData = [
     description: "We bieden een verscheidenheid aan pasta's, ontdek ons menu",
     items: [
       {
-        title: "PASTA BOLOGNAISE #42",
+        title: "PASTA BOLOGNAISE",
         content: "Bolognaisesaus, kaas",
         price: "11.00"
       },
       {
-        title: "PASTA FUNGI #43",
+        title: "PASTA FUNGI",
         content: "Roomsaus, kaas, champignons",
         price: "11.00"
       },
       {
-        title: "PASTA CARBONARA #44",
+        title: "PASTA CARBONARA",
         content: "Roomsaus, kaas, spek, tomatensaus",
         price: "11.00"
       },
       {
-        title: "PASTA POLLO #45",
+        title: "PASTA POLLO",
         content: "Roomsaus, kaas, kip",
         price: "11.00"
       },
       {
-        title: "PASTA VEGETARIAN #46",
+        title: "PASTA VEGETARIAN",
         content: "Roomsaus, kaas, groenten",
         price: "11.00"
       },
       {
-        title: "PASTA QUATTRO FROMAGGIO #47",
+        title: "PASTA QUATTRO FROMAGGIO",
         content: "Roomsaus, vier soorten kaas",
         price: "11.00"
       },
       {
-        title: "PASTA DIABOLIQUE #48",
+        title: "PASTA DIABOLIQUE",
         content: "Roomsaus, kaas, scampi's tomatensaus",
         price: "12.00"
       },
       {
-        title: "PASTA SPECIAL #49",
+        title: "PASTA SPECIAL",
         content: "Roomsaus, kaas, spek, kip, ei",
         price: "12.00"
       },
       {
-        title: "PASTA CHICKEN #50",
+        title: "PASTA CHICKEN",
         content: "Roomsaus, kaas, kip pesto",
         price: "12.00"
       },
       {
-        title: "PASTA CURRY #51",
+        title: "PASTA CURRY",
         content: "Roomsaus, ananas, maïs, ui, kip, gehaktballetjes, currysaus",
         price: "12.00"
       },
       {
-        title: "PASTA HUSREV #52",
+        title: "PASTA HUSREV",
         content: "Roomsaus, ui, paprika, kip, gehaktballetjes",
         price: "12.00"
       },
       {
-        title: "PASTA FRUTTI DI MARE #53",
+        title: "PASTA FRUTTI DI MARE",
         content: "Roomsaus, tomatensaus, zeevruchten",
         price: "12.00"
       },
       {
-        title: "PASTA ROMANA #54",
+        title: "PASTA ROMANA",
         content: "Roomsaus, kaas, kip, ui, champignons",
         price: "12.00"
       }
@@ -426,6 +429,129 @@ const menuData = [
         title: "Durum Vegetarisch",
         content: "Wrap, Fetakaas, Frietjes, Keuze Van saus en Groentjes",
         price: "10.00"
+      }
+    ]
+  },
+  {
+    category: "Specialty Pizzas",
+    description: "Unique and special pizza combinations",
+    items: [
+      {
+        title: "QUATTRO FROMAGGIO",
+        content: "Tomatensaus, kaas, vier soorten kaas",
+        price: "9.95",
+        isVegetarian: true
+      },
+      {
+        title: "PEPPERONI",
+        content: "Tomatensaus, kaas, pepperoni, maïs pikante pepers",
+        price: "9.95",
+        isSpicy: true
+      },
+      {
+        title: "MIMOSA",
+        content: "Tomatensaus, kaas, ham, tomaat",
+        price: "9.95"
+      },
+      {
+        title: "KEBAB",
+        content: "Tomatensaus, kaas, kebab",
+        price: "9.95"
+      },
+      {
+        title: "QUATTRO STAGIONE",
+        content: "Tomatensaus, kaas, champignons, paprika, salami, ham",
+        price: "9.95"
+      }
+    ]
+  },
+  {
+    category: "Vegetarian Pizzas",
+    description: "Delicious vegetarian pizza options",
+    items: [
+      {
+        title: "VEGETARISCH",
+        content: "Tomatensaus, kaas, paprika, champignons, mais, ui, olijven",
+        price: "8.95",
+        isVegetarian: true
+      },
+      {
+        title: "ROOM VEGIE",
+        content: "Roomsaus, kaas, champignons, ui, paprika, maïs, olijven",
+        price: "10.95",
+        isVegetarian: true
+      },
+      {
+        title: "CURRY VEGIE",
+        content: "Currysaus, kaas, ui, champignons, paprika, maïs, olijven",
+        price: "10.95",
+        isVegetarian: true
+      }
+    ]
+  },
+  {
+    category: "Spicy Pizzas",
+    description: "Hot and spicy pizza varieties",
+    items: [
+      {
+        title: "HOT PIZZA",
+        content: "Tomatensaus, kaas, peperoni, ui, paprika, pikante pepers",
+        price: "10.95",
+        isSpicy: true
+      },
+      {
+        title: "PIZZA MERGUEZZ",
+        content: "Tomatensaus, kaas, ui, paprika, look, merguez, pikante pepers, bbq saus",
+        price: "10.95",
+        isSpicy: true
+      },
+      {
+        title: "CURRY KEBAB",
+        content: "Currysaus, kaas, ui, paprika, kebab, pikante pepers",
+        price: "10.95",
+        isSpicy: true
+      }
+    ]
+  },
+  {
+    category: "Desserts",
+    description: "Sweet treats and desserts",
+    items: [
+      {
+        title: "Tiramisu",
+        content: "Classic Italian dessert with coffee-soaked ladyfingers",
+        price: "6.95"
+      },
+      {
+        title: "Chocolate Cake",
+        content: "Rich chocolate cake with chocolate ganache",
+        price: "5.95"
+      },
+      {
+        title: "Ice Cream",
+        content: "Vanilla ice cream with chocolate sauce",
+        price: "4.95"
+      }
+    ]
+  },
+  {
+    category: "Drinks",
+    description: "Refreshing beverages",
+    items: [
+      {
+        title: "Cola",
+        content: "Classic cola drink",
+        price: "2.95"
+      },
+      {
+        title: "Sprite",
+        content: "Lemon-lime flavored soda",
+        price: "2.95"
+      },
+      {
+        title: "Water",
+        content: "Mineral water",
+        price: "1.95"
       }
     ]
   }

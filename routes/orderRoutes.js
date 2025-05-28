@@ -6,7 +6,9 @@ const {
   getUserOrders,
   getOrder,
   updateOrderStatus,
-  getAllOrders
+  getAllOrders,
+  deleteOrder,
+  getOrdersByUserId
 } = require('../controllers/orderController');
 
 // All routes are protected
@@ -20,7 +22,8 @@ router
 
 router
   .route('/:id')
-  .get(getOrder);
+  .get(getOrder)
+  .delete(deleteOrder);
 
 // Admin routes
 router.use(authorize('admin'));
@@ -28,6 +31,10 @@ router.use(authorize('admin'));
 router
   .route('/admin/orders')
   .get(getAllOrders);
+
+router
+  .route('/user/:userId')
+  .get(getOrdersByUserId);
 
 router
   .route('/:id/status')

@@ -22,7 +22,7 @@ router
   .post(addToCart);
 
 router
-  .route('/items/:productId')
+  .route('/items/:itemId')
   .put(updateCartItem)
   .delete(removeFromCart);
 

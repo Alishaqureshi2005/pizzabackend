@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const config = require('../config/config');
 
 // Protect routes
 exports.protect = async (req, res, next) => {
@@ -19,16 +20,30 @@ exports.protect = async (req, res, next) => {
 
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id);
+      const decoded = jwt.verify(token, config.jwt.secret);
+      
+      // Get user from token and check if user exists
+      const user = await User.findById(decoded.id);
+      
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      // Set user in request object
+      req.user = user;
       next();
     } catch (error) {
+      console.error('Token verification error:', error);
       return res.status(401).json({
         success: false,
         message: 'Not authorized to access this route'
       });
     }
   } catch (error) {
+    console.error('Auth middleware error:', error);
     next(error);
   }
 };

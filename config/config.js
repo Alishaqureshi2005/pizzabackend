@@ -13,7 +13,7 @@ module.exports = {
 
   // Database Configuration
   database: {
-    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/pizza-auth'
+    uri: process.env.MONGODB_URI || 'mongodb+srv://narwanigorav3:2ZPFT5SkaiVjeaaN@cluster0.viuwitx.mongodb.net/pizzahouse?retryWrites=true&w=majority'
   },
 
   // CORS Configuration
