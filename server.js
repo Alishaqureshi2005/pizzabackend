@@ -2,10 +2,6 @@
 const express = require('express');
 // const path = require('path');
 
-app.use(express.static(path.join(__dirname, '../pizzahome/build')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../pizzahome/build/index.html'));
-});
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -23,6 +19,10 @@ app.use(express.json());
 // Enable CORS
 app.use(cors());
 
+app.use(express.static(path.join(__dirname, '../pizzahome/build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../pizzahome/build/index.html'));
+});
 // Mount routers
 // Auth routes
 app.use('/api/auth', require('./routes/auth'));
