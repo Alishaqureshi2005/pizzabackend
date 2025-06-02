@@ -17,108 +17,110 @@ const generateTimeSlots = (startHour, endHour) => {
 };
 
 const standardOperatingHours = {
-  monday: { open: '11:00', close: '22:00' },
-  tuesday: { open: '11:00', close: '22:00' },
-  wednesday: { open: '11:00', close: '22:00' },
-  thursday: { open: '11:00', close: '22:00' },
-  friday: { open: '11:00', close: '23:00' },
-  saturday: { open: '11:00', close: '23:00' },
-  sunday: { open: '11:00', close: '22:00' }
+  monday: { open: '11:00', close: '23:00' },
+  tuesday: { open: '11:00', close: '23:00' },
+  wednesday: { open: '11:00', close: '23:00' },
+  thursday: { open: '11:00', close: '23:00' },
+  friday: { open: '11:00', close: '23:30' },
+  saturday: { open: '11:00', close: '23:30' },
+  sunday: { open: '11:00', close: '23:00' }
 };
 
 const deliveryZones = [
   {
-    name: 'Mithi Main Bazaar',
-    description: 'Main Bazaar area including Shahi Bazaar, Vegetable Market and surrounding shops',
-    city: 'Mithi',
-    district: 'Tharparkar',
+    name: 'Saddar',
+    description: 'Covering Saddar area, including main market and surrounding commercial areas',
+    city: 'Hyderabad',
+    district: 'Hyderabad',
     province: 'Sindh',
     country: 'Pakistan',
     coordinates: {
-      latitude: 24.7337,
-      longitude: 69.7967
-    },
-    radius: 1.5, // 1.5 km radius
-    baseDeliveryFee: 30, // Lower fee for central area
-    minimumOrderAmount: 300,
-    maximumDeliveryTime: 20,
-    isActive: true,
-    timeSlots: generateTimeSlots(11, 22),
-    operatingHours: standardOperatingHours
-  },
-  {
-    name: 'Islamkot Road Zone',
-    description: 'Covering Islamkot Road, Thar Coal Housing, and nearby residential areas',
-    city: 'Mithi',
-    district: 'Tharparkar',
-    province: 'Sindh',
-    country: 'Pakistan',
-    coordinates: {
-      latitude: 24.7385,
-      longitude: 69.8012
-    },
-    radius: 3,
-    baseDeliveryFee: 60,
-    minimumOrderAmount: 500,
-    maximumDeliveryTime: 30,
-    isActive: true,
-    timeSlots: generateTimeSlots(11, 22),
-    operatingHours: standardOperatingHours
-  },
-  {
-    name: 'Nagarparkar Road Area',
-    description: 'Areas along Nagarparkar Road including Misri Shah Colony and surroundings',
-    city: 'Mithi',
-    district: 'Tharparkar',
-    province: 'Sindh',
-    country: 'Pakistan',
-    coordinates: {
-      latitude: 24.7290,
-      longitude: 69.7945
+      latitude: 25.3960,
+      longitude: 68.3578
     },
     radius: 2.5,
-    baseDeliveryFee: 50,
+    baseDeliveryFee: 40,
     minimumOrderAmount: 400,
     maximumDeliveryTime: 25,
     isActive: true,
-    timeSlots: generateTimeSlots(11, 22),
+    timeSlots: generateTimeSlots(11, 23),
     operatingHours: standardOperatingHours
   },
   {
-    name: 'Diplo Road Zone',
-    description: 'Covering Diplo Road, Government Housing, and nearby localities',
-    city: 'Mithi',
-    district: 'Tharparkar',
+    name: 'Latifabad',
+    description: 'Covering Latifabad Unit 1-12 and surrounding residential areas',
+    city: 'Hyderabad',
+    district: 'Hyderabad',
     province: 'Sindh',
     country: 'Pakistan',
     coordinates: {
-      latitude: 24.7362,
-      longitude: 69.7989
+      latitude: 25.3797,
+      longitude: 68.3600
+    },
+    radius: 3,
+    baseDeliveryFee: 50,
+    minimumOrderAmount: 500,
+    maximumDeliveryTime: 30,
+    isActive: true,
+    timeSlots: generateTimeSlots(11, 23),
+    operatingHours: standardOperatingHours
+  },
+  {
+    name: 'Qasimabad',
+    description: 'Covering Qasimabad, including residential and commercial areas',
+    city: 'Hyderabad',
+    district: 'Hyderabad',
+    province: 'Sindh',
+    country: 'Pakistan',
+    coordinates: {
+      latitude: 25.3867,
+      longitude: 68.3667
+    },
+    radius: 2.5,
+    baseDeliveryFee: 45,
+    minimumOrderAmount: 450,
+    maximumDeliveryTime: 25,
+    isActive: true,
+    timeSlots: generateTimeSlots(11, 23),
+    operatingHours: standardOperatingHours
+  },
+  {
+    name: 'Hirabad',
+    description: 'Covering Hirabad, including commercial and residential areas',
+    city: 'Hyderabad',
+    district: 'Hyderabad',
+    province: 'Sindh',
+    country: 'Pakistan',
+    coordinates: {
+      latitude: 25.3920,
+      longitude: 68.3650
     },
     radius: 2,
     baseDeliveryFee: 40,
-    minimumOrderAmount: 350,
-    maximumDeliveryTime: 25,
+    minimumOrderAmount: 400,
+    maximumDeliveryTime: 20,
     isActive: true,
-    timeSlots: generateTimeSlots(11, 22),
+    timeSlots: generateTimeSlots(11, 23),
     operatingHours: standardOperatingHours
   },
   {
-    name: 'Outer Mithi Zone',
-    description: 'Extended delivery zone including outskirts and nearby villages',
-    city: 'Mithi',
-    district: 'Tharparkar',
+    name: 'SITE Area',
+    description: 'Covering SITE industrial area and surrounding commercial zones',
+    city: 'Hyderabad',
+    district: 'Hyderabad',
     province: 'Sindh',
     country: 'Pakistan',
     coordinates: {
-      latitude: 24.7320,
-      longitude: 69.7950
+      latitude: 25.4000,
+      longitude: 68.3500
     },
-    radius: 5,
-    baseDeliveryFee: 100,
-    minimumOrderAmount: 800,
-    maximumDeliveryTime: 45,
-    isActive: true
+    radius: 3,
+    baseDeliveryFee: 50,
+    minimumOrderAmount: 500,
+    maximumDeliveryTime: 30,
+    isActive: true,
+    timeSlots: generateTimeSlots(11, 23),
+    operatingHours: standardOperatingHours
   }
 ];
 

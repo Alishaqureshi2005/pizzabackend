@@ -2,15 +2,21 @@ const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const printerService = require('../services/printerService');
 const logger = require('../utils/logger');
+const deliveryZoneService = require('../services/deliveryZoneService');
 
 // @desc    Create order from cart
 // @route   POST /api/orders
 // @access  Private
-const deliveryZoneService = require('../services/deliveryZoneService');
-
 exports.createOrder = async (req, res) => {
   try {
-    const { deliveryAddress, paymentMethod, orderType } = req.body;
+    const { 
+      items, 
+      customerInfo, 
+      orderType, 
+      paymentMethod, 
+      total,
+      deliveryAddress 
+    } = req.body;
 
     // Validate orderType
     if (!orderType || !['delivery', 'pickup'].includes(orderType)) {
@@ -20,23 +26,15 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    // Get user's cart
-    const cart = await Cart.findOne({ user: req.user.id }).populate('items.product');
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Cart is empty'
-      });
-    }
-
     let deliveryCharge = 0;
     let deliveryZone = null;
+    let isOutOfZone = false;
 
     if (orderType === 'delivery') {
-      if (!deliveryAddress || !deliveryAddress.coordinates || typeof deliveryAddress.coordinates.latitude !== 'number' || typeof deliveryAddress.coordinates.longitude !== 'number') {
+      if (!deliveryAddress || !deliveryAddress.coordinates) {
         return res.status(400).json({
           success: false,
-          message: 'Delivery address with valid coordinates is required for delivery orders.'
+          message: 'Delivery address with coordinates is required for delivery orders.'
         });
       }
 
@@ -44,35 +42,38 @@ exports.createOrder = async (req, res) => {
       const result = await deliveryZoneService.calculateDeliveryCharge(deliveryAddress.coordinates);
       deliveryCharge = result.deliveryCharge;
       deliveryZone = result.zone ? result.zone._id : null;
-
-      if (!deliveryZone) {
-        return res.status(400).json({
-          success: false,
-          message: 'Delivery is not available at the provided location.'
-        });
-      }
+      isOutOfZone = result.isOutOfZone;
     }
 
-    // Create order from cart items
+    // Create order
     const order = await Order.create({
       user: req.user.id,
-      items: cart.items.map(item => ({
-        product: item.product._id,
+      items: items.map(item => ({
+        product: item.productId,
         quantity: item.quantity,
         price: item.price,
-        customization: item.customization
+        customization: {
+          size: item.size,
+          toppings: item.toppings,
+          specialInstructions: item.specialInstructions
+        }
       })),
-      totalPrice: cart.totalPrice,
-      deliveryAddress: orderType === 'delivery' ? deliveryAddress : null,
+      totalPrice: total.subtotal,
+      deliveryAddress: orderType === 'delivery' ? {
+        street: deliveryAddress.address,
+        city: deliveryAddress.city,
+        postalCode: deliveryAddress.zipCode,
+        coordinates: deliveryAddress.coordinates
+      } : null,
       paymentMethod,
       orderType,
-      deliveryCharge,
-      deliveryZone
+      deliveryCharge: orderType === 'delivery' ? deliveryCharge : 0,
+      deliveryZone,
+      isOutOfZone,
+      tax: 0, // You can add tax calculation if needed
+      discount: 0, // You can add discount calculation if needed
+      finalPrice: orderType === 'delivery' ? total.total : total.subtotal
     });
-
-    // Clear the cart
-    cart.items = [];
-    await cart.save();
 
     await order.populate('items.product');
 
@@ -98,6 +99,7 @@ exports.createOrder = async (req, res) => {
       data: order
     });
   } catch (error) {
+    console.error('Error creating order:', error);
     res.status(500).json({
       success: false,
       message: 'Error creating order',

@@ -41,27 +41,13 @@ const orderItemSchema = new mongoose.Schema({
   customization: {
     size: {
       type: String,
-      required: true,
-      enum: ['small', 'medium', 'large']
-    },
-    crust: {
-      type: String,
-      required: true,
-      enum: ['classic', 'thin', 'thick', 'stuffed']
+      enum: ['small', 'medium', 'large'],
+      default: 'medium'
     },
     toppings: [{
       id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Topping'
-      },
-      name: String,
-      price: Number,
-      quantity: Number
-    }],
-    extraItems: [{
-      id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ExtraItem'
       },
       name: String,
       price: Number,
@@ -96,14 +82,7 @@ const orderSchema = new mongoose.Schema({
         return this.orderType === 'delivery';
       }
     },
-    apartment: String,
     city: {
-      type: String,
-      required: function() {
-        return this.orderType === 'delivery';
-      }
-    },
-    state: {
       type: String,
       required: function() {
         return this.orderType === 'delivery';
@@ -115,28 +94,16 @@ const orderSchema = new mongoose.Schema({
         return this.orderType === 'delivery';
       }
     },
-    country: {
-      type: String,
-      required: function() {
-        return this.orderType === 'delivery';
-      }
-    },
     coordinates: {
       latitude: Number,
       longitude: Number
     },
     deliveryInstructions: String
   },
-  pickupTime: {
-    type: Date,
-    required: function() {
-      return this.orderType === 'pickup';
-    }
-  },
   paymentMethod: {
     type: String,
     required: true,
-    enum: ['cash', 'credit_card', 'debit_card', 'upi', 'wallet'],
+    enum: ['cash', 'card'],
     default: 'cash'
   },
   paymentStatus: {
@@ -144,15 +111,6 @@ const orderSchema = new mongoose.Schema({
     required: true,
     enum: ['pending', 'paid', 'failed'],
     default: 'pending'
-  },
-  paymentDetails: {
-    transactionId: String,
-    paymentDate: Date,
-    paymentAmount: Number,
-    paymentCurrency: {
-      type: String,
-      default: 'USD'
-    }
   },
   status: {
     type: String,
@@ -169,6 +127,10 @@ const orderSchema = new mongoose.Schema({
   deliveryCharge: {
     type: Number,
     default: 0
+  },
+  isOutOfZone: {
+    type: Boolean,
+    default: false
   },
   tax: {
     type: Number,

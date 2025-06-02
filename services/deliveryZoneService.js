@@ -10,15 +10,26 @@ async function findMatchingDeliveryZone(coordinates) {
     throw new Error('Invalid coordinates');
   }
 
-  const location = [coordinates.longitude, coordinates.latitude];
-
   // Find all available zones
   const availableZones = await DeliveryZone.find({ isAvailable: true });
 
   // Find the zone where location falls into distance range
-  const matchingZone = availableZones.find(zone => zone.isLocationInZone(location));
+  const matchingZone = availableZones.find(zone => 
+    zone.isLocationInZone(coordinates.latitude, coordinates.longitude)
+  );
 
   return matchingZone || null;
+}
+
+/**
+ * Get the zone with the highest delivery fee
+ * @returns {Promise<DeliveryZone|null>} - Zone with highest fee or null if no zones exist
+ */
+async function getHighestFeeZone() {
+  const zones = await DeliveryZone.find({ isAvailable: true })
+    .sort({ baseDeliveryFee: -1 })
+    .limit(1);
+  return zones[0] || null;
 }
 
 /**
@@ -30,14 +41,24 @@ async function calculateDeliveryCharge(coordinates) {
   const zone = await findMatchingDeliveryZone(coordinates);
 
   if (!zone) {
-    return { zone: null, deliveryCharge: 0 };
+    // If no matching zone found, use the zone with highest delivery fee
+    const highestFeeZone = await getHighestFeeZone();
+    if (highestFeeZone) {
+      return { 
+        zone: highestFeeZone, 
+        deliveryCharge: highestFeeZone.baseDeliveryFee,
+        isOutOfZone: true 
+      };
+    }
+    return { zone: null, deliveryCharge: 0, isOutOfZone: false };
   }
 
-  const charge = zone.calculateDeliveryCharge([coordinates.longitude, coordinates.latitude]);
-  return { zone, deliveryCharge: charge };
+  const charge = zone.calculateDeliveryFee(coordinates.latitude, coordinates.longitude);
+  return { zone, deliveryCharge: charge, isOutOfZone: false };
 }
 
 module.exports = {
   findMatchingDeliveryZone,
-  calculateDeliveryCharge
+  calculateDeliveryCharge,
+  getHighestFeeZone
 };

@@ -20,7 +20,7 @@ app.use(cors());
 // Auth routes
 app.use('/api/auth', require('./routes/auth'));
 
-// Admin routes
+// Admin rout
 app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Product routes
