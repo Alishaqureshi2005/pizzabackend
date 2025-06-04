@@ -1,6 +1,6 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
-const Cart = require('../models/Cart');
+const Product = require('../models/Product');
 
 const importData = async () => {
   try {
@@ -12,42 +12,69 @@ const importData = async () => {
       throw new Error('User not found. Please seed users first.');
     }
 
-    // Get a cart to associate with the order
-    const cart = await Cart.findOne({ user: user._id });
-    if (!cart) {
-      throw new Error('Cart not found. Please seed cart first.');
+    // Get some products to add to orders
+    const products = await Product.find().limit(2);
+    if (!products.length) {
+      throw new Error('Products not found. Please seed products first.');
     }
 
     const orders = [
       {
         user: user._id,
-        cart: cart._id,
-        status: 'pending',
-        totalAmount: 0,
+        items: [
+          {
+            product: products[0]._id,
+            quantity: 2,
+            price: products[0].price,
+            customization: {
+              size: 'medium',
+              toppings: [],
+              specialInstructions: 'Extra cheese please'
+            }
+          }
+        ],
+        totalPrice: products[0].price * 2,
+        orderType: 'delivery',
         deliveryAddress: {
           street: '123 Main St',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10001',
-          country: 'USA'
+          city: 'Hyderabad',
+          postalCode: '500001',
+          coordinates: {
+            latitude: 17.3850,
+            longitude: 78.4867
+          }
         },
-        paymentMethod: 'credit_card',
-        paymentStatus: 'pending'
+        paymentMethod: 'card',
+        paymentStatus: 'paid',
+        status: 'delivered',
+        deliveryCharge: 50,
+        tax: 0,
+        discount: 0,
+        finalPrice: (products[0].price * 2) + 50
       },
       {
         user: user._id,
-        cart: cart._id,
-        status: 'completed',
-        totalAmount: 0,
-        deliveryAddress: {
-          street: '456 Park Ave',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10022',
-          country: 'USA'
-        },
+        items: [
+          {
+            product: products[1]._id,
+            quantity: 1,
+            price: products[1].price,
+            customization: {
+              size: 'large',
+              toppings: [],
+              specialInstructions: 'No onions'
+            }
+          }
+        ],
+        totalPrice: products[1].price,
+        orderType: 'pickup',
         paymentMethod: 'cash',
-        paymentStatus: 'completed'
+        paymentStatus: 'paid',
+        status: 'completed',
+        deliveryCharge: 0,
+        tax: 0,
+        discount: 0,
+        finalPrice: products[1].price
       }
     ];
 

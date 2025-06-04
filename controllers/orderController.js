@@ -15,7 +15,8 @@ exports.createOrder = async (req, res) => {
       orderType, 
       paymentMethod, 
       total,
-      deliveryAddress 
+      deliveryAddress,
+      deliveryCharge // Get delivery charge from client, default to 0
     } = req.body;
 
     // Validate orderType
@@ -24,25 +25,6 @@ exports.createOrder = async (req, res) => {
         success: false,
         message: 'Invalid or missing orderType. Must be "delivery" or "pickup".'
       });
-    }
-
-    let deliveryCharge = 0;
-    let deliveryZone = null;
-    let isOutOfZone = false;
-
-    if (orderType === 'delivery') {
-      if (!deliveryAddress || !deliveryAddress.coordinates) {
-        return res.status(400).json({
-          success: false,
-          message: 'Delivery address with coordinates is required for delivery orders.'
-        });
-      }
-
-      // Calculate delivery charge and find matching zone
-      const result = await deliveryZoneService.calculateDeliveryCharge(deliveryAddress.coordinates);
-      deliveryCharge = result.deliveryCharge;
-      deliveryZone = result.zone ? result.zone._id : null;
-      isOutOfZone = result.isOutOfZone;
     }
 
     // Create order
@@ -68,11 +50,9 @@ exports.createOrder = async (req, res) => {
       paymentMethod,
       orderType,
       deliveryCharge: orderType === 'delivery' ? deliveryCharge : 0,
-      deliveryZone,
-      isOutOfZone,
       tax: 0, // You can add tax calculation if needed
       discount: 0, // You can add discount calculation if needed
-      finalPrice: orderType === 'delivery' ? total.total : total.subtotal
+      finalPrice: orderType === 'delivery' ? total.subtotal + deliveryCharge : total.subtotal
     });
 
     await order.populate('items.product');

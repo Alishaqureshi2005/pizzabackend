@@ -9,6 +9,7 @@ const deliveryAreaSeeder = require('./deliveryAreaSeeder');
 const deliveryAddressSeeder = require('./deliveryAddressSeeder');
 const printerSettingsSeeder = require('./printerSettingsSeeder');
 const menuSeeder = require('./menuSeeder');
+const restaurantLocationSeeder = require('./restaurantLocationSeeder');
 
 const importData = async () => {
   try {
@@ -48,6 +49,9 @@ const importData = async () => {
     console.log('\nSeeding menu items...');
     await menuSeeder.importData();
 
+    console.log('\nSeeding restaurant locations...');
+    await restaurantLocationSeeder.importData();
+
     console.log('\nAll data imported successfully!');
   } catch (error) {
     console.error('\nError:', error.message);
@@ -64,6 +68,9 @@ const destroyData = async () => {
     console.log('Connected to database');
 
     // Destroy in reverse order of dependencies
+    console.log('\nDestroying restaurant locations...');
+    await restaurantLocationSeeder.destroyData();
+    
     console.log('\nDestroying menu items...');
     await menuSeeder.destroyData();
     

@@ -50,6 +50,30 @@ const restaurantLocations = [
       saturday: { open: '11:00', close: '23:00' },
       sunday: { open: '11:00', close: '22:30' }
     }
+  },
+  {
+    name: 'Pizza Extreme',
+    branchName: 'Saddar Branch',
+    address: 'S.No: 08 G/Floor Naaz & Bilal Shopping Mall, Saddar',
+    city: 'Hyderabad',
+    district: 'Hyderabad',
+    province: 'Sindh',
+    country: 'Pakistan',
+    coordinates: {
+      latitude: 25.3969,
+      longitude: 68.3778
+    },
+    contactNumber: '+92-333-1234567',
+    isActive: true,
+    operatingHours: {
+      monday: { open: '11:00', close: '23:00' },
+      tuesday: { open: '11:00', close: '23:00' },
+      wednesday: { open: '11:00', close: '23:00' },
+      thursday: { open: '11:00', close: '23:00' },
+      friday: { open: '11:00', close: '23:30' },
+      saturday: { open: '11:00', close: '23:30' },
+      sunday: { open: '11:00', close: '23:00' }
+    }
   }
 ];
 

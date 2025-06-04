@@ -33,32 +33,72 @@ async function getHighestFeeZone() {
 }
 
 /**
- * Calculate delivery charge for given coordinates.
- * @param {Object} coordinates - { latitude: Number, longitude: Number }
- * @returns {Promise<{ zone: DeliveryZone|null, deliveryCharge: Number }>} - Zone and delivery charge
+ * Calculate delivery charge based on distance
+ * @param {Object} coordinates - The delivery location coordinates
+ * @returns {Object} - Object containing delivery charge, zone info, and out of zone status
  */
-async function calculateDeliveryCharge(coordinates) {
-  const zone = await findMatchingDeliveryZone(coordinates);
+const calculateDeliveryCharge = async (coordinates) => {
+  try {
+    // Get all active delivery zones
+    const zones = await DeliveryZone.find({ isActive: true });
 
-  if (!zone) {
-    // If no matching zone found, use the zone with highest delivery fee
-    const highestFeeZone = await getHighestFeeZone();
-    if (highestFeeZone) {
-      return { 
-        zone: highestFeeZone, 
-        deliveryCharge: highestFeeZone.baseDeliveryFee,
-        isOutOfZone: true 
-      };
+    if (!zones || zones.length === 0) {
+      throw new Error('No active delivery zones found');
     }
-    return { zone: null, deliveryCharge: 0, isOutOfZone: false };
-  }
 
-  const charge = zone.calculateDeliveryFee(coordinates.latitude, coordinates.longitude);
-  return { zone, deliveryCharge: charge, isOutOfZone: false };
-}
+    // Find the zone with the highest delivery fee
+    const highestFeeZone = zones.reduce((prev, current) => {
+      return (prev.deliveryFee > current.deliveryFee) ? prev : current;
+    });
+
+    // For now, we'll use the highest fee zone for all deliveries
+    // In the future, you can implement actual distance calculation here
+    return {
+      deliveryCharge: highestFeeZone.deliveryFee,
+      zone: highestFeeZone,
+      isOutOfZone: true // Always true since we're using the highest fee
+    };
+  } catch (error) {
+    console.error('Error calculating delivery charge:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get all active delivery zones
+ * @returns {Array} - Array of active delivery zones
+ */
+const getAllActiveZones = async () => {
+  try {
+    return await DeliveryZone.find({ isActive: true });
+  } catch (error) {
+    console.error('Error fetching active delivery zones:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get delivery zone by ID
+ * @param {string} zoneId - The ID of the delivery zone
+ * @returns {Object} - The delivery zone object
+ */
+const getZoneById = async (zoneId) => {
+  try {
+    const zone = await DeliveryZone.findById(zoneId);
+    if (!zone) {
+      throw new Error('Delivery zone not found');
+    }
+    return zone;
+  } catch (error) {
+    console.error('Error fetching delivery zone:', error);
+    throw error;
+  }
+};
 
 module.exports = {
   findMatchingDeliveryZone,
   calculateDeliveryCharge,
-  getHighestFeeZone
+  getHighestFeeZone,
+  getAllActiveZones,
+  getZoneById
 };
