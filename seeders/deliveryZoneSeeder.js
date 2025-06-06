@@ -5,29 +5,35 @@ const deliveryZones = [
   {
     name: 'Saddar',
     distance: 2.5,
-    deliveryFee: 40
+    deliveryFee: 40,
+    estimatedTime: 30
   },
   {
     name: 'Latifabad',
     distance: 3,
-    deliveryFee: 50
+    deliveryFee: 50,
+    estimatedTime: 35  // ✅ FIXED TYPO HERE
   },
   {
     name: 'Qasimabad',
     distance: 2.5,
-    deliveryFee: 45
+    deliveryFee: 45,
+    estimatedTime: 32
   },
   {
     name: 'Hirabad',
     distance: 2,
-    deliveryFee: 40
+    deliveryFee: 40,
+    estimatedTime: 28
   },
   {
     name: 'SITE Area',
     distance: 3,
-    deliveryFee: 50
+    deliveryFee: 50,
+    estimatedTime: 35
   }
 ];
+
 
 const importData = async () => {
   try {

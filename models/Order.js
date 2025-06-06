@@ -76,29 +76,18 @@ const orderSchema = new mongoose.Schema({
     default: 'delivery'
   },
   deliveryAddress: {
-    street: {
+    address: {
       type: String,
       required: function() {
         return this.orderType === 'delivery';
       }
     },
-    city: {
+    area: {
       type: String,
       required: function() {
         return this.orderType === 'delivery';
       }
     },
-    postalCode: {
-      type: String,
-      required: function() {
-        return this.orderType === 'delivery';
-      }
-    },
-    coordinates: {
-      latitude: Number,
-      longitude: Number
-    },
-    deliveryInstructions: String
   },
   paymentMethod: {
     type: String,

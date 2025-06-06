@@ -16,7 +16,12 @@ exports.createOrder = async (req, res) => {
       paymentMethod, 
       total,
       deliveryAddress,
-      deliveryCharge // Get delivery charge from client, default to 0
+      deliveryCharge,
+      deliveryZone,
+      estimatedDeliveryTime,
+      tax = 0,
+      discount = 0,
+      notes
     } = req.body;
 
     // Validate orderType
@@ -26,6 +31,27 @@ exports.createOrder = async (req, res) => {
         message: 'Invalid or missing orderType. Must be "delivery" or "pickup".'
       });
     }
+
+    // Validate paymentMethod
+    if (!paymentMethod || !['cash', 'card'].includes(paymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or missing paymentMethod. Must be "cash" or "card".'
+      });
+    }
+
+    // Validate delivery address for delivery orders
+    if (orderType === 'delivery' && (!deliveryAddress || !deliveryAddress.address || !deliveryAddress.area)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Delivery address and area are required for delivery orders'
+      });
+    }
+
+    // Calculate final price
+    const totalPrice = total.subtotal;
+    const finalDeliveryCharge = orderType === 'delivery' ? deliveryCharge : 0;
+    const finalPrice = totalPrice + finalDeliveryCharge + tax - discount;
 
     // Create order
     const order = await Order.create({
@@ -40,19 +66,22 @@ exports.createOrder = async (req, res) => {
           specialInstructions: item.specialInstructions
         }
       })),
-      totalPrice: total.subtotal,
+      totalPrice,
       deliveryAddress: orderType === 'delivery' ? {
-        street: deliveryAddress.address,
-        city: deliveryAddress.city,
-        postalCode: deliveryAddress.zipCode,
-        coordinates: deliveryAddress.coordinates
-      } : null,
+        address: deliveryAddress.address,
+        area: deliveryAddress.area // Changed from city to area to match model
+      } : undefined, // Changed from null to undefined to avoid validation
       paymentMethod,
       orderType,
-      deliveryCharge: orderType === 'delivery' ? deliveryCharge : 0,
-      tax: 0, // You can add tax calculation if needed
-      discount: 0, // You can add discount calculation if needed
-      finalPrice: orderType === 'delivery' ? total.subtotal + deliveryCharge : total.subtotal
+      deliveryCharge: finalDeliveryCharge,
+      tax,
+      discount,
+      finalPrice, // Explicitly set finalPrice
+      deliveryZone: orderType === 'delivery' ? deliveryZone : undefined,
+      estimatedDeliveryTime: orderType === 'delivery' ? estimatedDeliveryTime : undefined,
+      notes,
+      status: 'pending',
+      paymentStatus: 'pending'
     });
 
     await order.populate('items.product');
@@ -171,7 +200,16 @@ exports.getOrder = async (req, res) => {
 // @access  Private/Admin
 exports.updateOrderStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, actualDeliveryTime } = req.body;
+
+    // Validate status
+    const validStatuses = ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid status value'
+      });
+    }
 
     const order = await Order.findById(req.params.id);
     if (!order) {
@@ -182,6 +220,12 @@ exports.updateOrderStatus = async (req, res) => {
     }
 
     order.status = status;
+    
+    // Update actual delivery time if order is delivered
+    if (status === 'delivered' && actualDeliveryTime) {
+      order.actualDeliveryTime = actualDeliveryTime;
+    }
+
     await order.save();
 
     await order.populate('items.product');

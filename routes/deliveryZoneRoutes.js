@@ -4,14 +4,11 @@ const {
   getAllDeliveryZones,
   createDeliveryZone,
   updateDeliveryZone,
-  deleteDeliveryZone,
-  getDeliveryFee
+  deleteDeliveryZone
 } = require('../controllers/deliveryZoneController');
 
 // Public routes
 router.get('/', getAllDeliveryZones);
-router.post('/get-delivery-fee', getDeliveryFee);
-
 // Admin routes
 router.post('/', createDeliveryZone);
 router.put('/:id', updateDeliveryZone);
