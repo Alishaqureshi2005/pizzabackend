@@ -16,11 +16,16 @@ const deliveryZoneSchema = new mongoose.Schema({
     required: [true, 'Delivery fee is required'],
     min: 0
   },
-estimatedTime: {
-  type: Number,
-  required: [true, 'Estimated delivery time in minutes is required'],
-  min: 0
-},
+  minimumOrderPrice: {
+    type: Number,
+    required: [true, 'Minimum order price is required'],
+    min: 0
+  },
+  estimatedTime: {
+    type: Number,
+    required: [true, 'Estimated delivery time in minutes is required'],
+    min: 0
+  },
   isActive: {
     type: Boolean,
     default: true

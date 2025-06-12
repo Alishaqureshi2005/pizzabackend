@@ -24,13 +24,14 @@ exports.getAllDeliveryZones = async (req, res) => {
 // @access  Private/Admin
 exports.createDeliveryZone = async (req, res) => {
   try {
-    const { name, distance, deliveryFee ,estimatedTime} = req.body;
+    const { name, distance, deliveryFee, estimatedTime, minimumOrderPrice } = req.body;
 
     const deliveryZone = await DeliveryZone.create({
       name,
       distance,
       deliveryFee,
-     estimatedTime
+      estimatedTime,
+      minimumOrderPrice
     });
 
     res.status(201).json({
@@ -51,11 +52,11 @@ exports.createDeliveryZone = async (req, res) => {
 exports.updateDeliveryZone = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, distance, deliveryFee, estimatedTime, isActive } = req.body;
+    const { name, distance, deliveryFee, estimatedTime, isActive, minimumOrderPrice } = req.body;
 
     const deliveryZone = await DeliveryZone.findByIdAndUpdate(
       id,
-      { name, distance, deliveryFee, isActive , estimatedTime },
+      { name, distance, deliveryFee, isActive, estimatedTime, minimumOrderPrice },
       { new: true, runValidators: true }
     );
 
