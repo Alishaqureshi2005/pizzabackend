@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const printerService = require('../services/printerService');
+const socketService = require('../services/socketService');
 const logger = require('../utils/logger');
 const deliveryZoneService = require('../services/deliveryZoneService');
 
@@ -48,35 +49,39 @@ exports.createOrder = async (req, res) => {
       });
     }
 
+    // Calculate total price from items
+    const totalPrice = items.reduce((sum, item) => {
+      return sum + (item.price * item.quantity);
+    }, 0);
+
     // Calculate final price
-    const totalPrice = total.subtotal;
-    const finalDeliveryCharge = orderType === 'delivery' ? deliveryCharge : 0;
-    const finalPrice = totalPrice + finalDeliveryCharge + tax - discount;
+    const finalDeliveryCharge = orderType === 'delivery' ? (deliveryCharge || 0) : 0;
+    const finalPrice = totalPrice + finalDeliveryCharge + (tax || 0) - (discount || 0);
 
     // Create order
     const order = await Order.create({
       user: req.user.id,
       items: items.map(item => ({
-        product: item.productId,
+        product: item.product,
         quantity: item.quantity,
         price: item.price,
         customization: {
-          size: item.size,
-          toppings: item.toppings,
-          specialInstructions: item.specialInstructions
+          size: item.customization?.size,
+          toppings: item.customization?.toppings,
+          specialInstructions: item.customization?.specialInstructions
         }
       })),
       totalPrice,
       deliveryAddress: orderType === 'delivery' ? {
         address: deliveryAddress.address,
-        area: deliveryAddress.area // Changed from city to area to match model
-      } : undefined, // Changed from null to undefined to avoid validation
+        area: deliveryAddress.area
+      } : undefined,
       paymentMethod,
       orderType,
       deliveryCharge: finalDeliveryCharge,
-      tax,
-      discount,
-      finalPrice, // Explicitly set finalPrice
+      tax: tax || 0,
+      discount: discount || 0,
+      finalPrice,
       deliveryZone: orderType === 'delivery' ? deliveryZone : undefined,
       estimatedDeliveryTime: orderType === 'delivery' ? estimatedDeliveryTime : undefined,
       notes,
@@ -85,6 +90,9 @@ exports.createOrder = async (req, res) => {
     });
 
     await order.populate('items.product');
+
+    // Emit new order event via Socket.IO
+    socketService.emitNewOrder(order);
 
     // Print receipts
     try {
@@ -165,7 +173,9 @@ exports.getUserOrders = async (req, res) => {
 // @access  Private
 exports.getOrder = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('items.product');
+    const order = await Order.findById(req.params.id)
+      .populate('items.product')
+      .populate('user');
 
     if (!order) {
       return res.status(404).json({
@@ -195,23 +205,23 @@ exports.getOrder = async (req, res) => {
   }
 };
 
-// @desc    Update order status (Admin only)
+// @desc    Update order status
 // @route   PUT /api/orders/:id/status
-// @access  Private/Admin
+// @access  Private (Admin only)
 exports.updateOrderStatus = async (req, res) => {
   try {
-    const { status, actualDeliveryTime } = req.body;
+    const { status } = req.body;
 
     // Validate status
-    const validStatuses = ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled'];
-    if (!validStatuses.includes(status)) {
+    if (!status || !['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled'].includes(status)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid status value'
+        message: 'Invalid or missing status.'
       });
     }
 
     const order = await Order.findById(req.params.id);
+
     if (!order) {
       return res.status(404).json({
         success: false,
@@ -220,25 +230,18 @@ exports.updateOrderStatus = async (req, res) => {
     }
 
     order.status = status;
-    
-    // Update actual delivery time if order is delivered
-    if (status === 'delivered' && actualDeliveryTime) {
-      order.actualDeliveryTime = actualDeliveryTime;
+
+    if (status === 'delivered') {
+      order.actualDeliveryTime = new Date();
+    }
+    if (status === 'cancelled') {
+      order.cancellationReason = req.body.cancellationReason || 'Cancelled by Admin';
     }
 
     await order.save();
 
-    await order.populate('items.product');
-
-    // Print updated order if status is 'preparing'
-    if (status === 'preparing') {
-      try {
-        await printerService.printOrder(order, 'kitchenOrder');
-      } catch (printError) {
-        logger.error('Error printing updated order:', printError);
-        // Don't fail the status update if printing fails
-      }
-    }
+    // Emit order status update via Socket.IO
+    socketService.emitOrderStatusUpdate(order);
 
     res.status(200).json({
       success: true,
@@ -253,33 +256,9 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
-// @desc    Get all orders (Admin only)
-// @route   GET /api/admin/orders
-// @access  Private/Admin
-exports.getAllOrders = async (req, res) => {
-  try {
-    const orders = await Order.find()
-      .populate('items.product')
-      .populate('user', 'name email')
-      .sort('-createdAt');
-
-    res.status(200).json({
-      success: true,
-      count: orders.length,
-      data: orders
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching orders',
-      error: error.message
-    });
-  }
-};
-
 // @desc    Delete order
 // @route   DELETE /api/orders/:id
-// @access  Private
+// @access  Private (Admin only)
 exports.deleteOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -291,27 +270,11 @@ exports.deleteOrder = async (req, res) => {
       });
     }
 
-    // Check if order belongs to user
-    if (order.user.toString() !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to delete this order'
-      });
-    }
-
-    // Only allow deletion of pending orders
-    if (order.status !== 'pending') {
-      return res.status(400).json({
-        success: false,
-        message: 'Can only delete pending orders'
-      });
-    }
-
     await order.deleteOne();
 
     res.status(200).json({
       success: true,
-      data: {}
+      message: 'Order deleted successfully'
     });
   } catch (error) {
     res.status(500).json({
@@ -328,30 +291,33 @@ exports.deleteOrder = async (req, res) => {
 exports.getOrdersByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { status, startDate, endDate } = req.query;
+    const { status, sortBy = 'date', sortOrder = 'desc' } = req.query;
 
-    // Build query
     let query = { user: userId };
-
-    // Add status filter if provided
     if (status) {
       query.status = status;
     }
 
-    // Add date range filter if provided
-    if (startDate || endDate) {
-      query.createdAt = {};
-      if (startDate) {
-        query.createdAt.$gte = new Date(startDate);
-      }
-      if (endDate) {
-        query.createdAt.$lte = new Date(endDate);
-      }
+    let sortField = 'createdAt';
+    if (sortBy === 'date') {
+      sortField = 'createdAt';
+    } else if (sortBy === 'status') {
+      sortField = 'status';
     }
+
+    const sortDirection = sortOrder === 'asc' ? 1 : -1;
 
     const orders = await Order.find(query)
       .populate('items.product')
-      .sort('-createdAt');
+      .populate('user')
+      .sort({ [sortField]: sortDirection });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No orders found for this user'
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -361,8 +327,49 @@ exports.getOrdersByUserId = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching orders by user',
+      message: 'Error fetching orders by user ID',
       error: error.message
     });
   }
-}; 
+};
+
+// @desc    Get all orders (Admin only)
+// @route   GET /api/admin/orders
+// @access  Private/Admin
+exports.getAllOrders = async (req, res) => {
+  console.log('getAllOrders function called');
+  try {
+    const { status, sortBy = 'date', sortOrder = 'desc' } = req.query;
+
+    let query = {};
+    if (status) {
+      query.status = status;
+    }
+
+    let sortField = 'createdAt';
+    if (sortBy === 'date') {
+      sortField = 'createdAt';
+    } else if (sortBy === 'status') {
+      sortField = 'status';
+    }
+
+    const sortDirection = sortOrder === 'asc' ? 1 : -1;
+
+    const orders = await Order.find(query)
+      .populate('items.product')
+      .populate('user')
+      .sort({ [sortField]: sortDirection });
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      data: orders
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching all orders',
+      error: error.message
+    });
+  }
+};

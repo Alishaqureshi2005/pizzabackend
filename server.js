@@ -1,4 +1,3 @@
-
 const express = require('express');
 // const path = require('path');
 
@@ -7,6 +6,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
+const socketService = require('./services/socketService');
 
 // Load env vars
 dotenv.config();
@@ -85,9 +85,12 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pizzahous
     console.log('Connected to MongoDB');
     // Start server
     const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-    console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    const server = app.listen(PORT, () => {
+      console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
     });
+
+    // Initialize Socket.IO
+    socketService.initializeSocket(server);
   })
   .catch((err) => {
     console.error('MongoDB connection error:', err);
