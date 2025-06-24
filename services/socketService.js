@@ -4,7 +4,11 @@ let io;
 const initializeSocket = (server) => {
   io = socketIO(server, {
     cors: {
-      origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+      origin: [         // From .env       // From .env
+        'http://localhost:3000',        // React/Vite dev server
+        'http://localhost:5173',        // Vite default
+        'http://localhost',             // Electron app
+        'http://159.65.174.111'],
       methods: ['GET', 'POST'],
       credentials: true
     }
