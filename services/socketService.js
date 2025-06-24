@@ -1,14 +1,27 @@
 const socketIO = require('socket.io');
 let io;
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost',
+  'http://159.65.174.111',
+  'https://159.65.174.111'
+];
+
+// Allow override from environment variable (comma-separated)
+if (process.env.CORS_ORIGIN) {
+  if (process.env.CORS_ORIGIN === '*') {
+    allowedOrigins.push('*');
+  } else {
+    allowedOrigins.push(...process.env.CORS_ORIGIN.split(','));
+  }
+}
+
 const initializeSocket = (server) => {
   io = socketIO(server, {
     cors: {
-      origin: [         // From .env       // From .env
-        'http://localhost:3000',        // React/Vite dev server
-        'http://localhost:5173',        // Vite default
-        'http://localhost',             // Electron app
-        'http://159.65.174.111'],
+      origin: allowedOrigins,
       methods: ['GET', 'POST'],
       credentials: true
     }
